@@ -1,0 +1,6 @@
+Mundo Matemático de Samuel
+
+El banco se construye dentro de MainActivity.java de forma determinista al iniciar la aplicación.
+Cada operación contiene exactamente 100 combinaciones únicas.
+Cada tercera pregunta se presenta como problema de aplicación contextualizado.
+Total: 400 preguntas.

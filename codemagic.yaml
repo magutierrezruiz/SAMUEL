@@ -1,0 +1,43 @@
+workflows:
+  mundo-matematico-samuel:
+    name: Mundo Matemático de Samuel - APK
+    max_build_duration: 30
+    instance_type: mac_mini_m2
+    environment:
+      java: 17
+    scripts:
+      - name: Confirmar archivos del proyecto
+        script: |
+          set -e
+          echo "Proyecto: Mundo Matemático de Samuel"
+          echo "Branch: $CM_BRANCH"
+          echo "Commit: $CM_COMMIT"
+          pwd
+          ls -la
+          test -f MainActivity.java
+          test -f AndroidManifest.xml
+          test -f build-apk.sh
+
+      - name: Preparar Android SDK 35
+        script: |
+          set -e
+          export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-/usr/local/share/android-sdk}"
+          SDKMANAGER="$ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager"
+          test -x "$SDKMANAGER"
+          yes | "$SDKMANAGER" --licenses >/dev/null || true
+          "$SDKMANAGER" "platforms;android-35" "build-tools;35.0.0" "platform-tools"
+          test -f "$ANDROID_SDK_ROOT/platforms/android-35/android.jar"
+          test -x "$ANDROID_SDK_ROOT/build-tools/35.0.0/aapt2"
+          test -x "$ANDROID_SDK_ROOT/build-tools/35.0.0/d8"
+          test -x "$ANDROID_SDK_ROOT/build-tools/35.0.0/zipalign"
+          test -x "$ANDROID_SDK_ROOT/build-tools/35.0.0/apksigner"
+
+      - name: Compilar y firmar APK de Samuel
+        script: |
+          set -e
+          export ANDROID_SDK_ROOT="${ANDROID_SDK_ROOT:-/usr/local/share/android-sdk}"
+          chmod +x build-apk.sh
+          ./build-apk.sh
+
+    artifacts:
+      - app-debug.apk
